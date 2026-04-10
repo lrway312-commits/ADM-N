@@ -15,7 +15,9 @@ import {
   Image as ImageIcon,
   DollarSign,
   Camera,
-  Lock
+  Lock,
+  Upload,
+  Layers
 } from 'lucide-react';
 
 // --- CONFIGURATION ---
@@ -29,10 +31,9 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // --- AUTHENTICATION ---
   const handleLogin = (e) => {
     e.preventDefault();
-    if (pin === "2026") { // Shared PIN
+    if (pin === "2026") {
       setIsAuthenticated(true);
       fetchInventory();
     } else {
@@ -44,7 +45,7 @@ function App() {
     setLoading(true);
     try {
       const resp = await axios.get(`${API_BASE}/inventory`, {
-        headers: { Authorization: `Bearer jewel2026` } // Matches default server secret
+        headers: { Authorization: `Bearer jewel2026` }
       });
       setInventory(resp.data);
     } catch (err) {
@@ -53,41 +54,30 @@ function App() {
     setLoading(false);
   };
 
-  const updateItem = async (id, updates) => {
-    try {
-      await axios.post(`${API_BASE}/inventory/update`, { id, updates }, {
-        headers: { Authorization: `Bearer jewel2026` }
-      });
-      fetchInventory();
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   if (!isAuthenticated) {
     return (
-      <div className="flex items-center justify-center min-vh-100 flex-col gap-8 pt-20">
+      <div className="flex items-center justify-center min-vh-100 flex-col gap-8 pt-32">
         <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-panel p-10 w-full max-w-md text-center gold-glow"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="control-card p-12 w-full max-w-sm text-center"
         >
-          <div className="bg-gold/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Lock className="text-gold w-10 h-10" />
+          <div className="bg-white/5 w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6">
+            <Lock className="text-primary w-8 h-8" />
           </div>
-          <h1 className="text-3xl font-bold mb-2">لوحة التحكم الفاخرة</h1>
-          <p className="text-white/60 mb-8">يرجى إدخال الرمز السري للدخول</p>
+          <h1 className="text-2xl font-bold mb-1">لوحة التحكم</h1>
+          <p className="text-white/40 text-sm mb-8">نظام إدارة المخزون والتسويق الآلي</p>
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
             <input 
               type="password" 
               placeholder="••••"
-              className="input-field text-center text-3xl tracking-widest"
+              className="input-flat text-center text-2xl tracking-[12px]"
               value={pin}
               onChange={(e) => setPin(e.target.value)}
               maxLength={4}
             />
-            <button type="submit" className="btn-gold">دخول</button>
-            {message && <p className="text-red-400 mt-2">{message}</p>}
+            <button type="submit" className="btn-primary mt-2">دخول النظام</button>
+            {message && <p className="text-red-400 text-sm mt-2">{message}</p>}
           </form>
         </motion.div>
       </div>
@@ -95,36 +85,36 @@ function App() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10">
-      <nav className="flex justify-between items-center mb-12">
-        <div className="flex items-center gap-4">
-          <div className="bg-gold text-black p-2 rounded-lg">
-            <Settings size={24} />
+    <div className="max-w-5xl mx-auto px-6 py-12">
+      <nav className="flex justify-between items-center mb-16 px-4 py-4 control-card">
+        <div className="flex items-center gap-3">
+          <div className="bg-primary p-2 rounded-lg">
+            <Layers size={22} className="text-white" />
           </div>
-          <h2 className="text-2xl font-bold italic tracking-tighter">VELLURE <span className="text-gold">ADMIN</span></h2>
+          <h2 className="text-lg font-bold tracking-tight">CONTROL <span className="text-primary">PANEL</span></h2>
         </div>
-        <div className="flex gap-4">
-          <NavBtn active={view === "dashboard"} icon={<LayoutGrid size={20}/>} label="الرئيسية" onClick={() => setView("dashboard")} />
-          <NavBtn active={view === "inventory"} icon={<PlusCircle size={20}/>} label="المخزون" onClick={() => setView("inventory")} />
+        <div className="flex gap-2">
+          <NavBtn active={view === "dashboard"} icon={<LayoutGrid size={18}/>} label="الرئيسية" onClick={() => setView("dashboard")} />
+          <NavBtn active={view === "inventory"} icon={<PlusCircle size={18}/>} label="إدارة المخزون" onClick={() => setView("inventory")} />
         </div>
       </nav>
 
       <AnimatePresence mode="wait">
         {view === "dashboard" && <DashboardView inventory={inventory} setView={setView} />}
         {view === "wizard" && <WizardView setView={setView} fetchInventory={fetchInventory} />}
-        {view === "inventory" && <InventoryView inventory={inventory} updateItem={updateItem} setView={setView} />}
+        {view === "inventory" && <InventoryView inventory={inventory} fetchInventory={fetchInventory} setView={setView} />}
       </AnimatePresence>
     </div>
   );
 }
 
-// --- SUB-COMPONENTS ---
+// --- COMPONENTS ---
 
 function NavBtn({ icon, label, onClick, active }) {
   return (
     <button 
       onClick={onClick}
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${active ? 'bg-gold text-black font-bold' : 'hover:bg-white/10 text-white/60'}`}
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${active ? 'bg-primary text-white' : 'hover:bg-white/5 text-white/40'}`}
     >
       {icon} <span>{label}</span>
     </button>
@@ -132,159 +122,215 @@ function NavBtn({ icon, label, onClick, active }) {
 }
 
 function DashboardView({ inventory, setView }) {
-  const onSite = inventory.filter(i => i.ON_WEBSITE).length;
-  const posted = inventory.filter(i => i.LAST_POSTED).length;
-
   return (
-    <motion.div 
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 20 }}
-      className="grid grid-cols-1 md:grid-cols-3 gap-6"
-    >
-      <StatCard label="إجمالي المخزون" value={inventory.length} icon={<LayoutGrid className="text-blue-400" />} />
-      <StatCard label="المعروض على الموقع" value={onSite} icon={<Eye className="text-green-400" />} />
-      <StatCard label="منشور على إنستا" value={posted} icon={<Camera className="text-pink-400" />} />
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <StatBox label="إجمالي المخزون" value={inventory.length} color="text-blue-400" />
+      <StatBox label="على الموقع" value={inventory.filter(i => i.ON_WEBSITE).length} color="text-green-400" />
+      <StatBox label="منشور (أتمتة)" value={inventory.filter(i => i.LAST_POSTED).length} color="text-pink-400" />
       
-      <div className="md:col-span-3 mt-8">
+      <div className="md:col-span-3 mt-4">
         <button 
           onClick={() => setView("wizard")}
-          className="glass-panel w-full p-12 flex flex-col items-center gap-4 hover:bg-gold/10 transition-all border-dashed border-gold/30 gold-glow"
+          className="control-card w-full p-16 flex flex-col items-center gap-4 hover:border-primary/50 transition-all group"
         >
-          <PlusCircle size={48} className="text-gold" />
-          <h3 className="text-2xl font-bold text-gold">إضافة منتج جديد (المعالج الذكي)</h3>
-          <p className="text-white/40">ابدأ بإضافة قطعة جديدة إلى المخزون، الموقع، أو إنستغرام</p>
+          <div className="bg-primary/10 p-5 rounded-full group-hover:bg-primary/20 transition-all">
+            <Upload size={32} className="text-primary" />
+          </div>
+          <h3 className="text-xl font-bold">رفع منتج جديد</h3>
+          <p className="text-white/30 text-sm">سيقوم النظام بتوليد 4 صور ونشرها آلياً</p>
         </button>
       </div>
     </motion.div>
   );
 }
 
-function StatCard({ label, value, icon }) {
+function StatBox({ label, value, color }) {
   return (
-    <div className="glass-panel p-8 flex items-center justify-between">
-      <div>
-        <p className="text-white/40 text-sm mb-1">{label}</p>
-        <p className="text-4xl font-bold">{value}</p>
-      </div>
-      <div className="p-4 bg-white/5 rounded-2xl">{icon}</div>
+    <div className="control-card p-6">
+      <p className="text-white/30 text-xs uppercase tracking-wider mb-2">{label}</p>
+      <p className={`text-3xl font-bold ${color}`}>{value}</p>
     </div>
   );
 }
 
 function WizardView({ setView, fetchInventory }) {
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [formData, setFormData] = useState({
-    name: "", category: "Rings", price: "", image_url: "", on_website: true, web_section: "rings"
+    name: "", category: "rings", price: "", post_ig: true, post_web: true
   });
 
+  const handleFileChange = (e) => {
+    const f = e.target.files[0];
+    if (f) {
+      setFile(f);
+      setPreview(URL.createObjectURL(f));
+    }
+  };
+
   const handleSubmit = async () => {
+    setLoading(true);
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("category", formData.category);
+    data.append("price", formData.price);
+    data.append("post_ig", formData.post_ig);
+    data.append("post_web", formData.post_web);
+    data.append("image", file);
+
     try {
-      await axios.post(`${API_BASE}/inventory/add`, formData, {
-        headers: { Authorization: `Bearer jewel2026` }
+      await axios.post(`${API_BASE}/inventory/upload`, data, {
+        headers: { 
+          Authorization: `Bearer jewel2026`,
+          'Content-Type': 'multipart/form-data'
+        }
       });
       fetchInventory();
       setView("inventory");
     } catch (err) {
-      alert("خطأ أثناء الإضافة");
+      alert("فشل رفع المنتج. تأكد من اتصال الخادم.");
     }
+    setLoading(false);
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="max-w-2xl mx-auto glass-panel p-10 gold-glow"
-    >
-      <div className="flex justify-between items-center mb-10">
-        <h2 className="text-2xl font-bold text-gold">معالج الإضافة الذكي</h2>
-        <div className="text-white/30 text-sm">خطوة {step} من 3</div>
+    <div className="max-w-xl mx-auto control-card p-10">
+      <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
+        <h2 className="text-xl font-bold">معالج الرفع الآلي</h2>
+        <span className="text-xs text-white/20 uppercase">Step {step}/3</span>
       </div>
 
       {step === 1 && (
         <div className="flex flex-col gap-6">
-          <label className="text-white/60">رابط صورة المنتج (أو اتركها فارغة للتوليد لاحقاً)</label>
-          <div className="flex gap-4">
-             <div className="bg-white/5 border border-dashed border-white/20 w-32 h-32 rounded-xl flex items-center justify-center">
-               <ImageIcon size={32} className="text-white/20" />
-             </div>
-             <input 
-              className="input-field flex-1" 
-              placeholder="https://cloudinary.com/..." 
-              value={formData.image_url}
-              onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-            />
+          <label className="text-sm text-white/40">اختر صورة المنتج الأصلية</label>
+          <div 
+            onClick={() => document.getElementById('fileInput').click()}
+            className="border-2 border-dashed border-white/10 rounded-2xl h-64 flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-white/5 transition-all"
+          >
+            {preview ? (
+              <img src={preview} className="h-full w-full object-contain p-4" />
+            ) : (
+              <>
+                <Upload size={32} className="text-white/20" />
+                <p className="text-sm text-white/20">اضغط للاختيار أو اسحب الصورة هنا</p>
+              </>
+            )}
           </div>
-          <button onClick={() => setStep(2)} className="btn-gold flex items-center justify-center gap-2">التالي <ArrowLeft size={18}/></button>
+          <input id="fileInput" type="file" className="hidden" onChange={handleFileChange} />
+          <button 
+            disabled={!file}
+            onClick={() => setStep(2)} 
+            className={`btn-primary flex items-center justify-center gap-2 ${!file && 'opacity-50 cursor-not-allowed'}`}
+          >
+            التالي <ArrowLeft size={16}/>
+          </button>
         </div>
       )}
 
       {step === 2 && (
-        <div className="flex flex-col gap-6 text-right" dir="rtl">
-          <input className="input-field" placeholder="اسم المنتج (مثال: خاتم السلطان)" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
-          <div className="grid grid-cols-2 gap-4">
-            <input className="input-field" placeholder="السعر (مثال: ₺20,000)" value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} />
-            <select className="input-field" value={formData.web_section} onChange={(e) => setFormData({...formData, web_section: e.target.value})}>
-              <option value="rings">الخواتم</option>
-              <option value="necklaces">القلادات</option>
-              <option value="bracelets">الأساور</option>
-            </select>
+        <div className="flex flex-col gap-5 text-right" dir="rtl">
+          <div>
+            <label className="text-xs text-white/30 block mb-2">اسم المنتج</label>
+            <input className="input-flat" placeholder="مثلاً: خاتم ذهب ملكي" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs text-white/30 block mb-2">السعر (اختياري)</label>
+              <input className="input-flat" placeholder="₺" value={formData.price} onChange={(e) => setFormData({...formData, price: e.target.value})} />
+            </div>
+            <div>
+              <label className="text-xs text-white/30 block mb-2">التصنيف</label>
+              <select className="input-flat" value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})}>
+                <option value="rings">الخواتم</option>
+                <option value="necklaces">القلادات</option>
+                <option value="bracelets">الأساور</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="flex flex-col gap-4 mt-8 pt-6 border-t border-white/5">
+            <Toggle label="النشر التلقائي على إنستغرام" checked={formData.post_ig} onChange={(v) => setFormData({...formData, post_ig: v})} />
+            <Toggle label="المزامنة مع الموقع الإلكتروني" checked={formData.post_web} onChange={(v) => setFormData({...formData, post_web: v})} />
+          </div>
+
           <div className="flex gap-4 mt-8">
-            <button onClick={() => setStep(3)} className="btn-gold flex-1">مراجعة ونشر</button>
-            <button onClick={() => setStep(1)} className="bg-white/5 p-4 rounded-lg"><ArrowRight/></button>
+            <button onClick={() => setStep(3)} className="btn-primary flex-1">مراجعة البيانات</button>
+            <button onClick={() => setStep(1)} className="bg-white/5 px-6 rounded-lg"><ArrowRight size={18}/></button>
           </div>
         </div>
       )}
 
       {step === 3 && (
         <div className="text-center flex flex-col gap-8">
-          <div className="bg-green-500/20 text-green-400 p-6 rounded-2xl flex flex-col items-center gap-2">
-            <CheckCircle size={48} />
-            <span className="font-bold">جاهز للإضافة!</span>
+          <div className="bg-primary/10 text-primary p-8 rounded-2xl flex flex-col items-center gap-2">
+            <CheckCircle size={40} />
+            <span className="font-bold">تأكيد الإرسال</span>
           </div>
-          <div className="text-right glass-panel p-6 bg-white/5">
-            <p className="text-gold font-bold">{formData.name}</p>
-            <p className="text-white/60">{formData.price}</p>
-            <p className="text-xs text-white/30 mt-2">سيتم النشر تلقائياً على الموقع</p>
+          <div className="text-right p-6 control-card bg-white/5 flex flex-col gap-2">
+            <div className="flex justify-between items-center border-b border-white/5 pb-2 mb-2">
+              <span className="text-white/20 text-xs">قنوات النشر</span>
+              <div className="flex gap-2">
+                {formData.post_ig && <span className="bg-pink-500/20 text-pink-400 text-[10px] px-2 py-0.5 rounded">Instagram</span>}
+                {formData.post_web && <span className="bg-green-500/20 text-green-400 text-[10px] px-2 py-0.5 rounded">Website</span>}
+              </div>
+            </div>
+            <p className="font-bold text-lg">{formData.name}</p>
+            <p className="text-primary font-medium">{formData.price || 'بدون سعر'}</p>
           </div>
-          <button onClick={handleSubmit} className="btn-gold">تأكيد الحفظ النهائي</button>
+          <button 
+            disabled={loading}
+            onClick={handleSubmit} 
+            className="btn-primary w-full flex items-center justify-center gap-2"
+          >
+            {loading ? <RefreshCw className="animate-spin" size={18} /> : 'ابدأ المعالجة والنشر'}
+          </button>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 
-function InventoryView({ inventory, updateItem, setView }) {
+function Toggle({ label, checked, onChange }) {
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="flex flex-col gap-4"
-    >
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">إدارة المخزون</h2>
-        <button onClick={() => setView("wizard")} className="bg-gold text-black p-2 rounded-full"><PlusCircle/></button>
+    <div className="flex justify-between items-center px-2">
+      <span className="text-sm font-medium text-white/60">{label}</span>
+      <label className="switch">
+        <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+        <span className="slider"></span>
+      </label>
+    </div>
+  );
+}
+
+function InventoryView({ inventory, fetchInventory, setView }) {
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col gap-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-bold">إدارة المنتجات</h2>
+        <button onClick={() => setView("wizard")} className="bg-primary hover:bg-primary/80 transition-all text-white p-2 rounded-lg flex items-center gap-2 text-sm px-4">
+          <PlusCircle size={18} /> منتج جديد
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {inventory.map(item => (
-          <div key={item.ID} className="glass-panel p-4 flex items-center gap-6">
-            <img src={item.GEN_IMAGES?.[0] || item.IMAGE_URL || 'https://via.placeholder.com/100'} className="w-20 h-20 rounded-lg object-cover bg-white/5" />
+        {inventory.slice().reverse().map(item => (
+          <div key={item.ID} className="control-card p-4 flex items-center gap-5">
+            <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-800">
+              <img src={item.IMAGE_URL || 'https://via.placeholder.com/100'} className="w-full h-full object-cover" />
+            </div>
             <div className="flex-1">
-              <h4 className="font-bold text-lg">{item.NAME}</h4>
-              <p className="text-gold text-sm font-bold">{item.PRICE || '---'}</p>
+              <h4 className="font-bold text-sm">{item.NAME}</h4>
+              <p className="text-primary text-xs font-bold mt-1">{item.PRICE || '---'}</p>
             </div>
             <div className="flex gap-2">
-              <button 
-                onClick={() => updateItem(item.ID, { ON_WEBSITE: !item.ON_WEBSITE })}
-                className={`p-2 rounded-lg transition-all ${item.ON_WEBSITE ? 'bg-green-500/20 text-green-400' : 'bg-white/5 text-white/30'}`}
-              >
-                {item.ON_WEBSITE ? <Eye size={20} /> : <EyeOff size={20} />}
-              </button>
-              <button className="p-2 rounded-lg bg-white/5 text-pink-400 hover:bg-pink-400/20">
-                <Camera size={20} />
-              </button>
+              <div className={`p-1.5 rounded-md ${item.ON_WEBSITE ? 'text-green-400 bg-green-400/10' : 'text-white/10 bg-white/5'}`}>
+                <Eye size={16} />
+              </div>
+              <div className={`p-1.5 rounded-md ${item.LAST_POSTED ? 'text-pink-400 bg-pink-400/10' : 'text-white/10 bg-white/5'}`}>
+                <Camera size={16} />
+              </div>
             </div>
           </div>
         ))}

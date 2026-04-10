@@ -1,33 +1,94 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&display=swap');
 
 @theme {
-  --color-gold-light: #f1e5ac;
-  --color-gold: #d4af37;
-  --color-gold-dark: #9a7b2c;
-  --color-charcoal: #0a0a0a;
-  --color-charcoal-lighter: #1a1a1a;
-  --font-arabic: "Noto Sans Arabic", sans-serif;
+  --color-primary: #4f46e5; /* Indigo */
+  --color-accent: #f59e0b;  /* Amber/Gold */
+  --color-bg-dark: #0f172a; /* Slate 900 */
 }
 
 body {
-  @apply bg-charcoal text-white font-arabic antialiased;
-  background: radial-gradient(circle at top right, #1a1a1a 0%, #0a0a0a 100%);
-  min-height: 100vh;
+  background-color: var(--color-bg-dark);
+  color: #f8fafc;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  margin: 0;
 }
 
-.glass-panel {
-  @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
+.control-card {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
 }
 
-.gold-glow {
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+.input-flat {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px;
+  color: white;
+  width: 100%;
 }
 
-.btn-gold {
-  @apply bg-gold hover:bg-gold-dark text-black font-bold py-3 px-6 rounded-lg transition-all duration-300;
+.input-flat:focus {
+  border-color: var(--color-primary);
+  outline: none;
 }
 
-.input-field {
-  @apply bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:border-gold outline-none transition-all;
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  filter: brightness(1.1);
+}
+
+/* iOS Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #334155;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #22c55e;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
 }
