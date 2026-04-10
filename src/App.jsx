@@ -14,7 +14,7 @@ import {
   Settings,
   Image as ImageIcon,
   DollarSign,
-  Instagram,
+  Camera,
   Lock
 } from 'lucide-react';
 
@@ -144,7 +144,7 @@ function DashboardView({ inventory, setView }) {
     >
       <StatCard label="إجمالي المخزون" value={inventory.length} icon={<LayoutGrid className="text-blue-400" />} />
       <StatCard label="المعروض على الموقع" value={onSite} icon={<Eye className="text-green-400" />} />
-      <StatCard label="منشور على إنستا" value={posted} icon={<Instagram className="text-pink-400" />} />
+      <StatCard label="منشور على إنستا" value={posted} icon={<Camera className="text-pink-400" />} />
       
       <div className="md:col-span-3 mt-8">
         <button 
@@ -283,7 +283,7 @@ function InventoryView({ inventory, updateItem, setView }) {
                 {item.ON_WEBSITE ? <Eye size={20} /> : <EyeOff size={20} />}
               </button>
               <button className="p-2 rounded-lg bg-white/5 text-pink-400 hover:bg-pink-400/20">
-                <Instagram size={20} />
+                <Camera size={20} />
               </button>
             </div>
           </div>

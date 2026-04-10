@@ -1,8 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@100..900&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;700&display=swap');
+@theme {
+  --color-gold-light: #f1e5ac;
+  --color-gold: #d4af37;
+  --color-gold-dark: #9a7b2c;
+  --color-charcoal: #0a0a0a;
+  --color-charcoal-lighter: #1a1a1a;
+  --font-arabic: "Noto Sans Arabic", sans-serif;
+}
 
 body {
   @apply bg-charcoal text-white font-arabic antialiased;
