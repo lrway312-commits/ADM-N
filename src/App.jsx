@@ -156,6 +156,7 @@ function StatBox({ label, value, color }) {
 function WizardView({ setView, fetchInventory }) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const [formData, setFormData] = useState({
@@ -172,6 +173,7 @@ function WizardView({ setView, fetchInventory }) {
 
   const handleSubmit = async () => {
     setLoading(true);
+    setErrorMsg("");
     const data = new FormData();
     data.append("name", formData.name);
     data.append("category", formData.category);
@@ -190,7 +192,9 @@ function WizardView({ setView, fetchInventory }) {
       fetchInventory();
       setView("inventory");
     } catch (err) {
-      alert("فشل رفع المنتج. تأكد من اتصال الخادم.");
+      const errMsg = err.response?.data?.error || err.message;
+      setErrorMsg(`فشل الاتصال: ${errMsg}`);
+      console.error("Upload Error:", err);
     }
     setLoading(false);
   };
@@ -279,6 +283,12 @@ function WizardView({ setView, fetchInventory }) {
             <p className="font-bold text-lg">{formData.name}</p>
             <p className="text-primary font-medium">{formData.price || 'بدون سعر'}</p>
           </div>
+          {errorMsg && (
+            <div className="bg-red-500/20 text-red-400 p-4 rounded-xl text-xs text-left" dir="ltr">
+              <span className="font-bold block mb-1">Error Log:</span>
+              <code>{errorMsg}</code>
+            </div>
+          )}
           <button 
             disabled={loading}
             onClick={handleSubmit} 
