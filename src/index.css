@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;700&display=swap');
+
+body {
+  @apply bg-charcoal text-white font-arabic antialiased;
+  background: radial-gradient(circle at top right, #1a1a1a 0%, #0a0a0a 100%);
+  min-height: 100vh;
+}
+
+.glass-panel {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
+}
+
+.gold-glow {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+}
+
+.btn-gold {
+  @apply bg-gold hover:bg-gold-dark text-black font-bold py-3 px-6 rounded-lg transition-all duration-300;
+}
+
+.input-field {
+  @apply bg-white/5 border border-white/10 rounded-lg p-3 text-white focus:border-gold outline-none transition-all;
+}
