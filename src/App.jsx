@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 
 // --- CONFIGURATION ---
-const API_BASE = "http://localhost:7864/api"; // Replace with HF Space root URL when deployed
+const API_BASE = "https://dgbfhfr-jewelry-system-final-x.hf.space/api";
 
 function App() {
   const [pin, setPin] = useState("");
